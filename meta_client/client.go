@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -42,6 +41,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	fmt.Println("pb.Dependencies", r.DependenciesArray)
 	log.Printf("Plugin: %s", r)
 }

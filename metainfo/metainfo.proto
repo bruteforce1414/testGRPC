@@ -8,7 +8,7 @@ package metainfo;
 // The greeting service definition.
 service MetaInfo {
     // Sends a request for Metadata
-    rpc GetMetaInfo (MetaDataRequest) returns (MetaDataReply) {
+    rpc GetMetaInfo (MetaDataRequest) returns (ArrayMetaDataReply) {
     }
 }
 
@@ -91,3 +91,6 @@ message MetaDataReply {
 
 }
 
+message ArrayMetaDataReply{
+    repeated MetaDataReply arrayMetaDataReply=1;
+}
