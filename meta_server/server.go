@@ -22,7 +22,8 @@ type server struct {
 }
 
 // SayHello implements helloworld.GreeterServer
-func (s *server) GetMetaInfo(ctx context.Context, req *pb.MetaDataRequest) (*pb.MetaDataReply, error) {
+func (s *server) GetMetaInfo(ctx context.Context, req *pb.MetaDataRequest) (*pb.ArrayMetaDataReply, error) {
+	var arrayPlugins pb.ArrayMetaDataReply
 
 	for _, v := range exampleData {
 		var deps []*pb.Dependency
@@ -90,7 +91,7 @@ func (s *server) GetMetaInfo(ctx context.Context, req *pb.MetaDataRequest) (*pb.
 		}
 
 		if (req.Id == string(v.ID.ID)) && (req.Version == string(v.ID.Version)) {
-			return &pb.MetaDataReply{
+			arrayPlugins.ArrayMetaDataReply = append(arrayPlugins.ArrayMetaDataReply, &pb.MetaDataReply{
 				MetaID: &pb.ID{
 					PluginID: &pb.PluginID{
 						MetaId:               v.ID.String(),
@@ -142,13 +143,13 @@ func (s *server) GetMetaInfo(ctx context.Context, req *pb.MetaDataRequest) (*pb.
 				XXX_NoUnkeyedLiteral: struct{}{},
 				XXX_unrecognized:     nil,
 				XXX_sizecache:        0,
-			}, nil
+			})
 
 		}
 	}
 
 	log.Printf("Received: %v", req)
-	return &pb.MetaDataReply{MetaID: nil}, nil
+	return &arrayPlugins, nil
 }
 
 func main() {
@@ -193,7 +194,7 @@ var exampleData = []meta.Data{
 
 	meta.Data{
 		ID: meta.ID{
-			ID:      "nori/session2",
+			ID:      "nori/session",
 			Version: "1.0.0",
 		},
 		Author: meta.Author{
@@ -208,7 +209,7 @@ var exampleData = []meta.Data{
 			Name:        "Nori Session",
 			Description: "Nori: Session Interface",
 		},
-		Interface: meta.NewInterface("nori/empty", "0.0.1"),
+		Interface: meta.NewInterface("nori/empty", "0.0.2"),
 		License: []meta.License{{
 			Title: "",
 			Type:  "GPLv3",
