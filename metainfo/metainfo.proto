@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "MetaInfoProto";
+
+package metainfo;
+
+// The greeting service definition.
+service MetaInfo {
+    // Sends a request for Metadata
+    rpc GetMetaInfo (MetaDataRequest) returns (MetaDataReply) {
+    }
+}
+
+// The request message containing the user's name.
+message MetaDataRequest {
+    string id = 1;
+    string version=2;
+}
+
+message PluginID {
+    string metaId = 1;
+}
+
+message ID {
+    PluginID PluginID = 1;
+    string Version = 2;
+}
+
+message Author {
+    string Name = 1;
+    string URI = 2;
+}
+
+message Dependencies {
+    repeated Dependency metaDependency = 1;
+}
+
+message Interface {
+    string Interface = 1;
+}
+
+message Dependency {
+    PluginID ID = 1;
+    string Constraint = 2;
+    Interface Interface = 3;
+}
+
+message Description {
+    string Name = 1;
+    string Description = 2;
+}
+
+message Core {
+    string VersionConstraint = 1;
+
+}
+
+message License {
+    string Title = 1;
+    string Type = 2;
+    string URI = 3;
+}
+
+message Link {
+    string Title = 1;
+    string URL = 2;
+}
+
+message Links {
+    repeated Link Link = 1;
+}
+
+message Repository {
+    string Type = 1;
+    string URI = 2;
+}
+
+// The response message containing the greetings
+message MetaDataReply {
+    ID metaID = 1;
+    Author Author = 2;
+    Dependencies DependenciesArray = 3;
+    Description Description = 4;
+    Core Core = 5;
+    Interface Interface = 6;
+    License License = 7;
+    Links Links = 8;
+    Repository Repository = 9;
+    repeated string Tags = 10;
+
+}
+
