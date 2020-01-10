@@ -3,14 +3,10 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 
 	"github.com/nori-io/nori-common/meta"
-	"github.com/nori-io/nori-interfaces/interfaces"
-
-	//"github.com/nori-io/nori-interfaces/interfaces"
 	"google.golang.org/grpc"
 
 	pb "github.com/bruteforce1414/testGRPC/metainfo"
@@ -29,8 +25,70 @@ type server struct {
 func (s *server) GetMetaInfo(ctx context.Context, req *pb.MetaDataRequest) (*pb.MetaDataReply, error) {
 
 	for _, v := range exampleData {
+		var deps []*pb.Dependency
 
-		fmt.Println("v.Dependencies", v.Dependencies)
+		for _, d := range v.Dependencies {
+			deps = append(deps, &pb.Dependency{
+				ID: &pb.PluginID{
+					MetaId:               string(d.ID),
+					XXX_NoUnkeyedLiteral: struct{}{},
+					XXX_unrecognized:     nil,
+					XXX_sizecache:        0,
+				},
+				Constraint: d.Constraint,
+				Interface: &pb.Interface{
+					Interface:            string(d.Interface),
+					XXX_NoUnkeyedLiteral: struct{}{},
+					XXX_unrecognized:     nil,
+					XXX_sizecache:        0,
+				},
+				XXX_NoUnkeyedLiteral: struct{}{},
+				XXX_unrecognized:     nil,
+				XXX_sizecache:        0,
+			})
+
+		}
+
+		var license *pb.License
+
+		for _, l := range v.License {
+			license = &pb.License{
+				Title:                l.Title,
+				Type:                 l.Type,
+				URI:                  l.URI,
+				XXX_NoUnkeyedLiteral: struct{}{},
+				XXX_unrecognized:     nil,
+				XXX_sizecache:        0,
+			}
+
+		}
+
+		var links *pb.Links
+
+		for _, l := range v.Links {
+			links = &pb.Links{
+				Link: []*pb.Link{&pb.Link{
+					Title:                l.Title,
+					URL:                  l.URL,
+					XXX_NoUnkeyedLiteral: struct{}{},
+					XXX_unrecognized:     nil,
+					XXX_sizecache:        0,
+				}},
+				XXX_NoUnkeyedLiteral: struct{}{},
+				XXX_unrecognized:     nil,
+				XXX_sizecache:        0,
+			}
+
+		}
+
+		repository := &pb.Repository{
+			Type:                 v.Repository.Type,
+			URI:                  v.Repository.URI,
+			XXX_NoUnkeyedLiteral: struct{}{},
+			XXX_unrecognized:     nil,
+			XXX_sizecache:        0,
+		}
+
 		if (req.Id == string(v.ID.ID)) && (req.Version == string(v.ID.Version)) {
 			return &pb.MetaDataReply{
 				MetaID: &pb.ID{
@@ -53,18 +111,34 @@ func (s *server) GetMetaInfo(ctx context.Context, req *pb.MetaDataRequest) (*pb.
 					XXX_sizecache:        0,
 				},
 				DependenciesArray: &pb.Dependencies{
-					MetaDependency:       nil,
+					MetaDependency:       deps,
 					XXX_NoUnkeyedLiteral: struct{}{},
 					XXX_unrecognized:     nil,
 					XXX_sizecache:        0,
 				},
-				Description:          nil,
-				Core:                 nil,
-				Interface:            nil,
-				License:              nil,
-				Links:                nil,
-				Repository:           nil,
-				Tags:                 nil,
+				Description: &pb.Description{
+					Name:                 v.Description.Name,
+					Description:          v.Description.Description,
+					XXX_NoUnkeyedLiteral: struct{}{},
+					XXX_unrecognized:     nil,
+					XXX_sizecache:        0,
+				},
+				Core: &pb.Core{
+					VersionConstraint:    v.Core.VersionConstraint,
+					XXX_NoUnkeyedLiteral: struct{}{},
+					XXX_unrecognized:     nil,
+					XXX_sizecache:        0,
+				},
+				Interface: &pb.Interface{
+					Interface:            string(v.Interface),
+					XXX_NoUnkeyedLiteral: struct{}{},
+					XXX_unrecognized:     nil,
+					XXX_sizecache:        0,
+				},
+				License:              license,
+				Links:                links,
+				Repository:           repository,
+				Tags:                 v.Tags,
 				XXX_NoUnkeyedLiteral: struct{}{},
 				XXX_unrecognized:     nil,
 				XXX_sizecache:        0,
@@ -102,14 +176,12 @@ var exampleData = []meta.Data{
 		Core: meta.Core{
 			VersionConstraint: ">=1.0.0, <2.0.0",
 		},
-		Dependencies: []meta.Dependency{
-			interfaces.CacheInterface.Dependency(),
-		},
+		Dependencies: []meta.Dependency{},
 		Description: meta.Description{
 			Name:        "Nori Session",
 			Description: "Nori: Session Interface",
 		},
-		//Interface: interfaces.SessionInterface,
+		Interface: meta.NewInterface("nori/empty", "0.0.1"),
 		License: []meta.License{{
 			Title: "",
 			Type:  "GPLv3",
@@ -131,14 +203,12 @@ var exampleData = []meta.Data{
 		Core: meta.Core{
 			VersionConstraint: ">=1.0.0, <2.0.0",
 		},
-		Dependencies: []meta.Dependency{
-			//interfaces.CacheInterface.Dependency(),
-		},
+		Dependencies: []meta.Dependency{},
 		Description: meta.Description{
 			Name:        "Nori Session",
 			Description: "Nori: Session Interface",
 		},
-		//Interface: interfaces.SessionInterface,
+		Interface: meta.NewInterface("nori/empty", "0.0.1"),
 		License: []meta.License{{
 			Title: "",
 			Type:  "GPLv3",
